@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# commented version of original from kaggle at https://www.kaggle.com/pavansanagapati/12-simple-tips-to-save-ram-memory-for-1-gb-dataset
+# commented version of original from kaggle at
+# https://www.kaggle.com/pavansanagapati/12-simple-tips-to-save-ram-memory-for-1-gb-dataset
+from sys import getsizeof
 import numpy as np
 import pandas as pd
 import gc
@@ -16,15 +18,17 @@ INPUT_PATH = "/content"
 
 def create_df():
     train = pd.read_csv(
-        os.path.join(INPUT_PATH, "jigsaw-unintended-bias-train-processed-seqlen128.csv")
-    )
+        os.path.join(
+            INPUT_PATH,
+            "jigsaw-unintended-bias-train-processed-seqlen128.csv"))
     return train
 
 
 train.head()
 
 # using gc.collect(): the dataframe not being used can be deleted using del command and just to make sure there is no residual memory usage we can call gc.collect()
-# calling gc.collect after transformations/functions also help to remove the accumulations
+# calling gc.collect after transformations/functions also help to remove
+# the accumulations
 del train
 gc.collect()
 
@@ -54,9 +58,9 @@ for i in ["uint8", "int8", "int16"]:
 def mem_usage(pandas_obj):
     if isinstance(pandas_obj, pd.DataFrame):
         usage_b = pandas_obj.memory_usage(deep=True).sum()
-    else: 
+    else:
         usage_b = pandas_obj.memory_usage(deep=True)
-    usage_mb = usage_b / 1024 ** 2  
+    usage_mb = usage_b / 1024 ** 2
     return "{:03.2f} MB".format(usage_mb)
 
 
@@ -65,7 +69,8 @@ converted_train_int = train_int.apply(pd.to_numeric, downcast="unsigned")
 print(mem_usage(train_int))
 print(mem_usage(converted_train_int))
 
-compare_ints_table = pd.concat([train_int.dtypes, converted_train_int.dtypes], axis=1)
+compare_ints_table = pd.concat(
+    [train_int.dtypes, converted_train_int.dtypes], axis=1)
 compare_ints_table.columns = ["Before Conversion", "After Conversion"]
 print(compare_ints_table)
 compare_ints_table.apply(pd.Series.value_counts)
@@ -74,7 +79,8 @@ train_float = train.select_dtypes(include=["float"])
 converted_floats = train_float.apply(pd.to_numeric, downcast="float")
 print(mem_usage(train_float))
 print(mem_usage(converted_floats))
-compare_floats = pd.concat([train_float.dtypes, converted_floats.dtypes], axis=1)
+compare_floats = pd.concat(
+    [train_float.dtypes, converted_floats.dtypes], axis=1)
 compare_floats.columns = ["Before", "After"]
 compare_floats.apply(pd.Series.value_counts)
 
@@ -84,8 +90,8 @@ optimized_train[converted_floats.columns] = converted_floats
 print(mem_usage(train))
 print(mem_usage(optimized_train))
 
-# python doesnot have fine grained-control over how memory is stored. hence, it's slower to access the strings.
-from sys import getsizeof
+# python doesnot have fine grained-control over how memory is stored.
+# hence, it's slower to access the strings.
 
 for s in ["Hello", "Hello Hi", "Python Python hello", "Hi Hi HI"]:
     print(getsizeof(s))
@@ -135,7 +141,9 @@ print(column_types)
 
 # using the dictionary we can read in the dataframe
 read_optimized = pd.read_csv(
-    os.path.join(INPUT_PATH, "jigsaw-unintended-bias-train-processed-seqlen128.csv"),
+    os.path.join(
+        INPUT_PATH,
+        "jigsaw-unintended-bias-train-processed-seqlen128.csv"),
     dtype=column_types,
 )
 print(mem_usage(read_optimized))
@@ -144,6 +152,8 @@ print(mem_usage(read_optimized))
 train_df = pd.read_csv("path", nrows=100)
 
 # random row selection (#4)
+
+
 def file_len(fname):
     process = subprocess.Popen(
         ["wc", "-l", fname], stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -155,8 +165,9 @@ def file_len(fname):
 
 
 random_rows = file_len(
-    os.path.join(INPUT_PATH, "jigsaw-unintended-bias-train-processed-seqlen128.csv")
-)
+    os.path.join(
+        INPUT_PATH,
+        "jigsaw-unintended-bias-train-processed-seqlen128.csv"))
 print(random_rows)
 
 skip_rows = np.random.choice(
